@@ -13,18 +13,19 @@ CREATE TABLE current_weather(
     city_id INT REFERENCES city(id),
     date DATE NOT NULL,
     time TIME NOT NULL,
-    temp FLOAT NOT NULL,
-    feels_like FLOAT NOT NULL,
+    temp_c FLOAT NOT NULL,
+    feels_like_c FLOAT NOT NULL,
     weather_condition_code INT NOT NULL,
     weather_condition_text VARCHAR(50) NOT NULL,
     weather_condition_icon VARCHAR(100) NOT NULL,
-    wind_speed FLOAT NOT NULL,
-    wind_deg INT NOT NULL,
-    pressure FLOAT NOT NULL,
-    precip FLOAT NOT NULL,
-    humidity INT NOT NULL,
-    cloud_cover INT NOT NULL,
-    uv FLOAT NOT NULL
+    wind_speed_kph FLOAT NOT NULL,
+    wind_speed_mps FLOAT NOT NULL,
+    wind_dir VARCHAR(3) NOT NULL,
+    pressure_mb FLOAT NOT NULL,
+    precip_mm FLOAT NOT NULL,
+    humidity_perc INT NOT NULL,
+    cloud_perc INT NOT NULL,
+    uv_index FLOAT NOT NULL
 );
 
 CREATE TABLE weather_history(
@@ -47,3 +48,7 @@ CREATE TABLE weather_history(
 ALTER TABLE city
 ADD CONSTRAINT city_unique_constraint
 UNIQUE(name, region, country, time_zone, latitude, longitude);
+
+ALTER TABLE current_weather
+ADD CONSTRAINT weather_unique_constraint
+UNIQUE(city_id, date, time);
