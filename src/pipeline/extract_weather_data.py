@@ -1,11 +1,17 @@
+from pathlib import Path
+
 import httpx
+import os
+from dotenv import load_dotenv
 from prefect import get_run_logger
 from prefect import task
+
+load_dotenv()
 
 base_url = "https://api.weatherapi.com"
 path_url_realtime_api = "/v1/current.json"
 path_url_history_api = "/v1/history.json"
-api_key = ""
+api_key = os.getenv("WEATHER_API_KEY")
 
 @task
 def task_generate_url(city: str):
