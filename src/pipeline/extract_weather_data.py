@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import httpx
 import os
 from dotenv import load_dotenv
