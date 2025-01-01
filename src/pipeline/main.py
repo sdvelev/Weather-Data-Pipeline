@@ -11,7 +11,10 @@ from transform_weather_data import (task_fill_direct_city_fields, task_fill_dire
                                     task_transform_wind_dir)
 
 
-SOURCE_REPO="https://github.com/sdvelev/Weather-Data-Pipeline"
+def generate_current_weather_flow_run_name():
+    flow_name = flow_run.flow_name
+    city = flow_run.parameters['city']
+    return f"{flow_name}-for-{city.replace(' ', '-')}"
 
 def generate_extract_weather_flow_run_name():
     flow_name = flow_run.flow_name
@@ -79,8 +82,8 @@ def flow_load_weather_data(city_data_to_insert: dict, weather_data_to_insert: di
     load_status = task_load_weather_data_if_necessary(weather_data_to_insert, city_id)
 
 
-@flow(log_prints=True)
-def weather_data_pipeline(city: str = "Sofia"):
+@flow(flow_run_name=generate_current_weather_flow_run_name, log_prints=True)
+def current_weather_data_pipeline(city: str = "Sofia"):
     weather_data = flow_extract_weather_data(city)
     print(weather_data)
     city_data_to_insert, weather_data_to_insert = flow_transform_weather_data(weather_data)
@@ -89,15 +92,15 @@ def weather_data_pipeline(city: str = "Sofia"):
     flow_load_weather_data(city_data_to_insert, weather_data_to_insert)
 
 def main():
-    weather_data_london_deploy = weather_data_pipeline.to_deployment(
+    weather_data_london_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-london-hourly-flow-deployment",
-        cron="6 * * * *",
+        cron="25 * * * *",
         parameters={"city": "London"},
     )
 
-    weather_data_sofia_deploy = weather_data_pipeline.to_deployment(
+    weather_data_sofia_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-sofia-hourly-flow-deployment",
-        cron="6 * * * *",
+        cron="25 * * * *",
         parameters={"city": "Sofia"},
     )
 
