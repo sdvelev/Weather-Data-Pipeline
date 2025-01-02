@@ -1,8 +1,8 @@
 import psycopg2
 import os
+
 from dotenv import load_dotenv
 from prefect import task
-from prefect.runtime import task_run
 
 load_dotenv()
 
@@ -12,7 +12,7 @@ db_name = os.getenv("DB_NAME")
 db_host = os.getenv("DB_HOST")
 
 
-@task(log_prints=True)
+@task(retries=2, retry_delay_seconds=10, timeout_seconds=60, log_prints=True)
 def task_load_daily_weather_analysis_if_necessary(daily_weather_analysis_to_insert: dict):
     stringified_daily_weather_analysis_to_insert = {key: str(value) for key, value in
                                                     daily_weather_analysis_to_insert.items()}
@@ -50,6 +50,8 @@ def task_load_daily_weather_analysis_if_necessary(daily_weather_analysis_to_inse
                 RETURNING id
                 """, stringified_daily_weather_analysis_to_insert
             )
-            result_index = cursor.fetchone()[0]
+            result_index = cursor.fetchone()
+            if result_index is None:
+                return None
             cursor.execute("SELECT setval('daily_weather_analyses_id_seq', (SELECT MAX(id) FROM daily_weather_analyses))")
-            return result_index
+            return result_index[0]
