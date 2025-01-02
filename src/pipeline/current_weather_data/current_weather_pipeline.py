@@ -1,14 +1,14 @@
 import datetime
 import pytz
 
-from prefect import flow, task, get_run_logger, serve
+from prefect import flow, serve
 from prefect.runtime import flow_run
 
 from extract_weather_data import task_generate_url, task_extract_current_weather_data
-from load_weather_data import task_load_city_data_if_necessary, task_load_weather_data_if_necessary
 from transform_weather_data import (task_fill_direct_city_fields, task_fill_direct_weather_fields,
                                     task_transform_date_time_fields, task_transform_wind_speed_mps,
                                     task_transform_wind_dir)
+from load_weather_data import task_load_city_data_if_necessary, task_load_weather_data_if_necessary
 
 
 def generate_current_weather_flow_run_name():
@@ -59,8 +59,7 @@ def generate_load_weather_data_flow_run_name():
 @flow(flow_run_name=generate_extract_weather_flow_run_name, log_prints=True)
 def flow_extract_weather_data(city: str):
     url = task_generate_url(city)
-    weather_data = task_extract_current_weather_data(url)
-    return weather_data
+    return task_extract_current_weather_data(url)
 
 @flow(flow_run_name=generate_transform_weather_data_flow_run_name, log_prints=True)
 def flow_transform_weather_data(weather_data: dict):
@@ -75,36 +74,44 @@ def flow_transform_weather_data(weather_data: dict):
 
     return city_data_to_insert, weather_data_to_insert
 
-
 @flow(flow_run_name=generate_load_weather_data_flow_run_name, log_prints=True)
 def flow_load_weather_data(city_data_to_insert: dict, weather_data_to_insert: dict):
     city_id = task_load_city_data_if_necessary(city_data_to_insert)
-    load_status = task_load_weather_data_if_necessary(weather_data_to_insert, city_id)
-
+    task_load_weather_data_if_necessary(weather_data_to_insert, city_id)
 
 @flow(flow_run_name=generate_current_weather_flow_run_name, log_prints=True)
 def current_weather_data_pipeline(city: str = "Sofia"):
     weather_data = flow_extract_weather_data(city)
-    print(weather_data)
     city_data_to_insert, weather_data_to_insert = flow_transform_weather_data(weather_data)
-    print(city_data_to_insert)
-    print(weather_data_to_insert)
     flow_load_weather_data(city_data_to_insert, weather_data_to_insert)
 
 def main():
-    weather_data_london_deploy = current_weather_data_pipeline.to_deployment(
-        name="weather-data-london-hourly-flow-deployment",
-        cron="25 * * * *",
-        parameters={"city": "London"},
-    )
-
     weather_data_sofia_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-sofia-hourly-flow-deployment",
-        cron="25 * * * *",
+        cron="6 * * * *",
         parameters={"city": "Sofia"},
     )
 
-    serve(weather_data_london_deploy, weather_data_sofia_deploy)
+    weather_data_rome_deploy = current_weather_data_pipeline.to_deployment(
+        name="weather-data-rome-hourly-flow-deployment",
+        cron="7 * * * *",
+        parameters={"city": "Rome"},
+    )
+
+    weather_data_london_deploy = current_weather_data_pipeline.to_deployment(
+        name="weather-data-london-hourly-flow-deployment",
+        cron="8 * * * *",
+        parameters={"city": "London"},
+    )
+
+    weather_data_new_york_deploy = current_weather_data_pipeline.to_deployment(
+        name="weather-data-new-york-hourly-flow-deployment",
+        cron="9 * * * *",
+        parameters={"city": "New York"},
+    )
+
+    serve(weather_data_sofia_deploy, weather_data_rome_deploy,
+          weather_data_london_deploy, weather_data_new_york_deploy)
 
 
 if __name__ == "__main__":
