@@ -1,6 +1,6 @@
 [project]
-name = "current-weather-data-pipeline"
-description = "Coursework for Big Data Management and Processing course"
+name = "weather-data-pipeline"
+description = "Coursework for Big Data Management and Processing Course"
 authors = [
     { name = "Stefan Velev", email = "stefanvelev349@gmail.com" }
 ]
@@ -9,6 +9,3 @@ dependencies = [
     "httpx ~= 1.0.0b0",
     "psycopg2 ~= 2.9.10"
 ]
-
-[project.scripts]
-pipeline = "src.pipeline.main:main"
