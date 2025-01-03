@@ -59,10 +59,8 @@ def task_extract_city_id(location_data: dict):
             return result[0] if result else None
 
 @task(retries=2, retry_delay_seconds=2, timeout_seconds=10)
-def task_extract_previous_date(time_zone: str):
-    date_obj = datetime.now(ZoneInfo(time_zone))
-    previous_day = date_obj - timedelta(days=1)
-    return previous_day.date()
+def task_extract_date(time_zone: str):
+    return datetime.now(ZoneInfo(time_zone)).date()
 
 @task(retries=2, retry_delay_seconds=10, timeout_seconds=60)
 def task_extract_weather_record(city_id: str, previous_date: str):
