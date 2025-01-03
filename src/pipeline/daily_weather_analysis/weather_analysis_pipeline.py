@@ -4,7 +4,7 @@ from prefect import flow, serve
 from prefect.client.schemas.schedules import CronSchedule
 from prefect.runtime import flow_run
 
-from extract_weather_historical_data import (task_extract_previous_date, task_extract_city_id,
+from extract_weather_historical_data import (task_extract_date, task_extract_city_id,
                                              task_extract_weather_record, task_generate_historical_data_url,
                                              task_extract_astro_data, task_extract_weather_historical_data)
 from transform_weather_historical_data import (task_transform_to_pd_df, task_fill_direct_weather_analysis_fields,
@@ -44,7 +44,7 @@ def generate_load_weather_historical_data_flow_run_name():
 
 @flow(flow_run_name=generate_extract_weather_historical_data_flow_run_name, log_prints=True)
 def flow_extract_weather_historical_data(city: str, time_zone: str):
-    previous_date = task_extract_previous_date(time_zone)
+    previous_date = task_extract_date(time_zone)
     url = task_generate_historical_data_url(city, previous_date)
     weather_data = task_extract_weather_historical_data(url)
     astro_dict = task_extract_astro_data(weather_data["forecast"]["forecastday"][0]["astro"])
@@ -80,7 +80,7 @@ def flow_load_weather_historical_data(daily_weather_analysis_to_insert: dict, ci
     return task_load_daily_weather_analysis_if_necessary(daily_weather_analysis_to_insert)
 
 @flow(flow_run_name=generate_historical_weather_flow_run_name, log_prints=True)
-def weather_analysis_pipeline(city: str = "Sofia", time_zone: str = "Europe/Sofia"):
+def weather_analysis_pipeline(city: str, time_zone: str):
     weather_data_list, astro_dict, country = flow_extract_weather_historical_data(city, time_zone)
     if weather_data_list is not None:
         daily_weather_analysis_to_insert = flow_transform_weather_historical_data(weather_data_list, astro_dict, city, country)
@@ -92,7 +92,7 @@ def main():
         parameters={"city": "Sofia", "time_zone": "Europe/Sofia"},
         schedules=[
             CronSchedule(
-                cron="10 23 * * *",
+                cron="20 23 * * *",
                 timezone="Europe/Sofia"
             )
         ]
@@ -103,7 +103,7 @@ def main():
         parameters={"city": "Rome", "time_zone": "Europe/Rome"},
         schedules=[
             CronSchedule(
-                cron="16 23 * * *",
+                cron="23 23 * * *",
                 timezone="Europe/Rome"
             )
         ]

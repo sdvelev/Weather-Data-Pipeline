@@ -88,25 +88,25 @@ def current_weather_data_pipeline(city: str = "Sofia"):
 def main():
     weather_data_sofia_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-sofia-hourly-flow-deployment",
-        cron="6 * * * *",
+        cron="9 * * * *",
         parameters={"city": "Sofia"},
     )
 
     weather_data_rome_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-rome-hourly-flow-deployment",
-        cron="7 * * * *",
+        cron="10 * * * *",
         parameters={"city": "Rome"},
     )
 
     weather_data_london_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-london-hourly-flow-deployment",
-        cron="8 * * * *",
+        cron="11 * * * *",
         parameters={"city": "London"},
     )
 
     weather_data_new_york_deploy = current_weather_data_pipeline.to_deployment(
         name="weather-data-new-york-hourly-flow-deployment",
-        cron="9 * * * *",
+        cron="12 * * * *",
         parameters={"city": "New York"},
     )
 
