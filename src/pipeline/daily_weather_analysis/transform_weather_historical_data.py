@@ -68,8 +68,8 @@ def task_generate_temp_changes_plot(weather_data_df: pd.DataFrame, city: str, co
     plt.plot(df['time'].dt.strftime('%H:%M'), df['temp_c'], marker='o', label='Temperature (°C)',
              color='goldenrod', linewidth=2)
 
-    plt.xlabel('Time of Day', fontsize=12)
-    plt.ylabel('Temperature (°C)', fontsize=12)
+    plt.xlabel('Time of Day', fontsize=12, fontweight='bold')
+    plt.ylabel('Temperature (°C)', fontsize=12, fontweight='bold')
     plt.title(f"Temperature Changes Throughout the Day for {city}, {country}\n(Date: {plot_date})",
               fontsize=14, fontweight='bold')
     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
@@ -101,8 +101,8 @@ def task_generate_wind_speed_changes_plot(weather_data_df: pd.DataFrame, city: s
     plt.plot(df['time'].dt.strftime('%H:%M'), df['wind_speed_mps'].apply(lambda x: float('{:,.2f}'.format(x))),
              marker='o', label='Wind Speed (m/s)', color='darkblue', linewidth=2)
 
-    plt.xlabel('Time of Day', fontsize=12)
-    plt.ylabel('Wind Speed (m/s)', fontsize=12)
+    plt.xlabel('Time of Day', fontsize=12, fontweight='bold')
+    plt.ylabel('Wind Speed (m/s)', fontsize=12, fontweight='bold')
     plt.title(f"Wind Speed Changes Throughout the Day for {city}, {country}\n(Date: {plot_date})",
               fontsize=14, fontweight='bold')
     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
@@ -129,13 +129,12 @@ def task_generate_precipitation_changes_plot(weather_data_df: pd.DataFrame, city
     plt.figure(figsize=(12, 6))
     plt.bar(df['time'].dt.strftime('%H:%M'), df['precip_mm'], color='skyblue')
 
-    plt.xlabel('Time of Day', fontsize=12)
-    plt.ylabel('Precipitation (mm)', fontsize=12)
+    plt.xlabel('Time of Day', fontsize=12, fontweight='bold')
+    plt.ylabel('Precipitation (mm)', fontsize=12, fontweight='bold')
     plt.title(f"Precipitation Changes Throughout the Day for {city}, {country}\n(Date: {plot_date})",
               fontsize=14, fontweight='bold')
     plt.xticks(rotation=45, fontsize=10)
     plt.yticks(fontsize=10)
-    plt.legend(fontsize=10)
 
     output_file = os.path.join(output_dir, f"precipitation_changes_{city.replace(' ', '_')}_"
                                            f"{country.replace(' ', '_')}.png")
@@ -152,13 +151,12 @@ def task_plot_temperature_distribution(weather_data_df: pd.DataFrame, city: str,
 
     plt.figure(figsize=(8, 6))
     plt.boxplot(weather_data_df['temp_c'])
-    plt.ylabel('Temperature (°C)', fontsize=12)
+    plt.ylabel('Temperature (°C)', fontsize=12, fontweight='bold')
     plt.title(f"Daily Temperature Distribution for {city}, {country}\n(Date: {plot_date})",
               fontsize=14, fontweight='bold')
 
     output_file = os.path.join(output_dir, f"temperature_distribution_{city.replace(' ', '_')}_"
                                            f"{country.replace(' ', '_')}.png")
-    plt.tight_layout()
     plt.savefig(output_file, dpi=300)
     plt.close()
 
@@ -192,11 +190,10 @@ def task_plot_wind_rose(weather_data_df: pd.DataFrame, city: str, country: str):
 
     ax = WindroseAxes.from_ax()
     ax.bar(angles, weather_data_df['wind_speed_kph'], normed=True, opening=0.8, edgecolor='white')
-    ax.set_title(f"Daily Wind Rose for {city}, {country} (Date: {plot_date})", fontsize=14, fontweight="bold")
+    ax.set_title(f"Daily Wind Rose for {city}, {country}\n(Date: {plot_date})", fontsize=14, fontweight="bold")
     ax.set_legend(title = 'Wind Speed (km/h)')
 
     output_file = os.path.join(output_dir, f"wind_rose_{city.replace(' ', '_')}_"
                                            f"{country.replace(' ', '_')}.png")
-    plt.tight_layout()
     plt.savefig(output_file, dpi=300)
     plt.close()
