@@ -98,11 +98,11 @@ def task_generate_wind_speed_changes_plot(weather_data_df: pd.DataFrame, city: s
     os.makedirs(output_dir, exist_ok=True)
 
     plt.figure(figsize=(12, 6))
-    plt.plot(df['time'].dt.strftime('%H:%M'), df['wind_speed_mps'].apply(lambda x: float('{:,.2f}'.format(x))),
-             marker='o', label='Wind Speed (m/s)', color='darkblue', linewidth=2)
+    plt.plot(df['time'].dt.strftime('%H:%M'), df['wind_speed_kph'].apply(lambda x: float('{:,.2f}'.format(x))),
+             marker='o', label='Wind Speed (km/h)', color='darkblue', linewidth=2)
 
     plt.xlabel('Time of Day', fontsize=12, fontweight='bold')
-    plt.ylabel('Wind Speed (m/s)', fontsize=12, fontweight='bold')
+    plt.ylabel('Wind Speed (km/h)', fontsize=12, fontweight='bold')
     plt.title(f"Wind Speed Changes Throughout the Day for {city}, {country}\n(Date: {plot_date})",
               fontsize=14, fontweight='bold')
     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
@@ -189,9 +189,9 @@ def task_plot_wind_rose(weather_data_df: pd.DataFrame, city: str, country: str):
     angles = [direction_to_angle[direct] for direct in directions]
 
     ax = WindroseAxes.from_ax()
-    ax.bar(angles, weather_data_df['wind_speed_kph'], normed=True, opening=0.8, edgecolor='white')
-    ax.set_title(f"Daily Wind Rose for {city}, {country}\n(Date: {plot_date})", fontsize=14, fontweight="bold")
-    ax.set_legend(title = 'Wind Speed (km/h)')
+    ax.bar(angles, weather_data_df['wind_speed_mps'], normed=True, opening=0.8, edgecolor='white')
+    ax.set_title(f"Daily Wind Rose for {city}, {country} (Date: {plot_date})", fontsize=14, fontweight="bold")
+    ax.set_legend(title = 'Wind Speed (m/s)')
 
     output_file = os.path.join(output_dir, f"wind_rose_{city.replace(' ', '_')}_"
                                            f"{country.replace(' ', '_')}.png")
