@@ -190,7 +190,7 @@ def task_plot_wind_rose(weather_data_df: pd.DataFrame, city: str, country: str):
 
     ax = WindroseAxes.from_ax()
     ax.bar(angles, weather_data_df['wind_speed_mps'], normed=True, opening=0.8, edgecolor='white')
-    ax.set_title(f"Daily Wind Rose for {city}, {country} (Date: {plot_date})", fontsize=14, fontweight="bold")
+    ax.set_title(f"Daily Wind Rose for {city}, {country}\n(Date: {plot_date})", fontsize=14, fontweight="bold")
     ax.set_legend(title = 'Wind Speed (m/s)')
 
     output_file = os.path.join(output_dir, f"wind_rose_{city.replace(' ', '_')}_"
